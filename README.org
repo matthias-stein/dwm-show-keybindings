@@ -1,0 +1,145 @@
+#+TITLE: dwm show keybindings
+#+DESCRIPTION: This repo provides a Python script, that reads the keybindings from config.h and displays them in a floating window for quick reference. 
+#+STARTUP: overview
+
+* Overview
+When starting with a WM (window manager), the most difficult thing for me is to remember all the keybindings. Sure, you can look them up in the config, but opening the config and then searching though it until you reach the keybindings can be tedious. Sure, you can change them to the ones you are used to, but each WM has some functionality that others don't, which you need to learn anyways.
+
+When I played around with [[https://xmonad.org/][Xmonad]], I wrote a simple =Python= script that extracted the keybindings from the config and displayed them in a terminal window. I created a =.desktop= file for that script, and was able to quickly start it from [[https://github.com/davatorium/rofi][Rofi]].
+
+* The DT Factor
+I started with WMs in the first place, because of videos from [[https://distro.tube/index.html][DT's Distro Tube]] I stumbled across on =YoutTube=. The first one I tried was [[https://xmonad.org/][Xmonad]] (DT's favorite), which I got up and running (mostly thanks to DT's videos), but never felt very comfortable with due to me not having a clue about [[https://www.haskell.org/][Haskel]], the language =Xmonad= is written and configured in.
+
+When I started looking for an alternative where I would have a better understanding on what I was hacking on, I choose [[https://dwm.suckless.org/][dwm]]. I don't know how to program =C=, but I can read the syntax of =C=, which already is not the case for me with =Haskel=.
+
+On the way to that decision, I watched several =YouTube= videos; one of which was again from DT on the [[https://awesomewm.org/][Awesome WM]], where he showed the [[https://youtu.be/qKtit_B7Keo?t=902][option to display the keybindings with a shortcut in a centered window]]. I very much liked that and wanted to incorporate that feature into my =dwm= build.
+
+* Pre-Requisites to use
+
+=dwm= is written in [[https://www.open-std.org/jtc1/sc22/wg14/][C]], so it would have made sense to write the keybinding displaying program in =C= as well, perhaps even providing it as a [[https://dwm.suckless.org/patches/][patch to dwm]] - if I only knew how to write =C= programs. I mostly understand the syntax and am able to modify the =config.def.h= or even apply patches manually if the autmatic patching fails, but writing a program from scratch is way beyond me.
+
+I know [[https://www.python.org/][Python]] quite well, doing reports and small apps in it at work and using it for all kind of private automation stuff and web development. So this is what I choose.
+
+This means you need to have =Python 3= installed. The script does not use any additional =Python= libraries. For the GUI part, [[https://docs.python.org/3/library/tkinter.html][Tkinter]] is used, which should be part of the standard =Python= library, but I had to install it on =Ubuntu= by running
+
+#+begin_src shell :tangle no
+  sudo apt install python3-tk
+#+end_src
+
+* Installation
+The way I use =dwm-show-keybindings= is to clone the repo, and then use [[https://www.gnu.org/software/stow/][GNU Stow]] to create symlinks where needed. A =.stow.rc= file is included in the repo for this way of installing. If you choose another way, you may need to change some paths in the =Python= code.
+
+When stowing, the following folders/files will be created:
+
++ ~/bin/
+  + dwm-show-keybindings.py
++ ~/.config/dwm/dwm-show-keybindings/
+  + logo/
+    + [...] several logo image files [...]
+  + dwm-show-keybindings.ini
+
+I then additionally added a keybinding to my =config.def.h= to be able to quickly display the current list of keybindings by pressing =F1=:
+
+#+begin_src c :tangle no
+  /* appearance */
+  [...]
+  /* tagging */
+  [...]
+  /* layout(s) */
+  [...]
+  /* key definitions */
+  [...]
+  /* commands */
+  [...]
+  static const char *keymapcmd[] = { "dwm-keybindings.py", NULL };
+  [...]
+  static Key keys[] = {
+      [...]		      
+	  { 0, XK_F1, spawn, {.v = keymapcmd } /*<g>Spawner</g><d>Spawn terminal.</d>*/ },
+      [...]
+  };
+  /* button definitions */
+#+end_src
+
+More on the comment in that line below.
+
+* Adding Sections and Descriptions
+The default =dwm config.h= does include the keybindings, but no descriptions for them. I thought I'd be smart and just add two more =char arrays= to the array like so:
+
+#+begin_src c :tangle no
+  { MODKEY|ShiftMask, XK_p, spawn, {.v = dmenucmd } },
+  =>
+  { MODKEY|ShiftMask, XK_p, spawn, {.v = dmenucmd }, "Section Name", "Description" },
+#+end_src
+
+but that gave me an warning on running =make=:
+
+#+begin_src c :tangle no
+  config.h:80:79: warning: excess elements in struct initializer
+   80 |  { MODKEY|ShiftMask, XK_p, spawn, {.v = dmenucmd },  "Section Name", "Description" },
+#+end_Src
+
+I would still be able to compile, but would always get these warnings - for each keybinding.
+
+After watching some introductury =C= videos on YouTube, I think I nailed it down to:
+#+begin_src c :tangle no
+  /* dwm.c line 118 */
+  typedef struct {
+      unsigned int mod;
+      KeySym keysym;
+      void (*func)(const Arg *);
+      const Arg arg;
+  } Key;
+#+end_src
+where the structure of a keybinging =array= is defined.
+
+I guess I would need to add two more =char[]= entries to that struct, but, as mentioned earlier, I don't realy know my way around =C=, so I have no clue what (unwanted) effects such a change could have overall. I had to look for a different approach.
+
+What I settled on is using a comment containing two tags:
+
+#+begin_src c
+  { MODKEY|ShiftMask, XK_p, spawn, {.v = dmenucmd }, /*<g>Section Name</g><d>Description</d>*/ },
+#+end_src
+
+I am searching =config.h= with a regular expression that looks for any or no whitespace between the different elements between ={= and =}=, so it does not matter how exactly that line is formtted in the file, the information of one keybinding can even be spread across multiple lines.
+
+* dwm-keybindings.ini
+The =.ini= file allows the customization of the window created. All the available options are described here.
+
+** [DWM]
++ conf :: This is the path to the =dwm= config file, the keybindings are to be read from; so probably =config.h= or =config.def.h=. It can be specified as an absolute path, or as a relative path. If the path is relative, the provided path fragment is appended to the current user's home directory.
+** [WINDOW]
++ ColumnCount :: The number of columns to be created in the window.
++ KeyChordWidthWeight :: The relative width of the key combination within the column.
++ DescriptionWidthWeight :: The relative width of the key description within the column.
+** [STYLE]
+The style section defines the colors. In the sample =.ini= are different style sections, in the form of =[STYLE_{NAME}]=. These are ignored, only the colors from =[STYLE]= are used. To enable a style, remove the =_{NAME}= part. If more than one =[STYLE]= is active, this causes an error.
+
+As an alternative (that is the way I use it), leave the =[STYLE_{NAME}]= in place, and directly place under the theme you want to activate a  =[STYLE]=. This makes the  =[STYLE_{NAME}]= an empty section that has not effect. 
+
++ BgHead :: background color header
++ FgHead :: foregroud color header
++ BgBody :: background color column body
++ FgBody :: foregroud color column body
++ FgTitle :: foreground color section header
++ FgKeyChords :: foregroud color key chords
++ logo :: name of image file in =.config/dwm/dwm-keybindings/logo=
+
+* Screenshots
+Here you can see a couple of examples:
+
+#+CAPTION: Suckless Theme, 3 columns, weight 3:4
+#+attr_html: :width 100%
+[[./xmpl_0002.png]]
+
+#+CAPTION: Gruvbox Theme, 4 columns, weight 3:4
+#+attr_html: :width 100%
+[[./xmpl_0001.png]]
+
+#+CAPTION: Doom One Theme, 2 columns, weight 5:2
+#+attr_html: :width 100%
+[[./xmpl_0003.png]]
+
+#+CAPTION: Solarized Dark Theme, 2 columns, weight 1:2
+#+attr_html: :width 100%
+[[./xmpl_0004.png]]
