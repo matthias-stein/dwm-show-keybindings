@@ -7,6 +7,24 @@ When starting with a WM (window manager), the most difficult thing for me is to 
 
 When I played around with [[https://xmonad.org/][Xmonad]], I wrote a simple =Python= script that extracted the keybindings from the config and displayed them in a terminal window. I created a =.desktop= file for that script, and was able to quickly start it from [[https://github.com/davatorium/rofi][Rofi]].
 
+* Screeshots
+Here you can see a couple of examples:
+
+** Suckless Theme, 3 columns, weight 3:4
+#+attr_html: :width 100%
+[[./xmpl_0002.png]]
+
+** Gruvbox Theme, 4 columns, weight 3:4
+#+attr_html: :width 100%
+[[./xmpl_0001.png]]
+
+** Doom One Theme, 2 columns, weight 5:2
+#+attr_html: :width 100%
+[[./xmpl_0003.png]]
+
+** Solarized Dark Theme, 2 columns, weight 1:2
+#+attr_html: :width 100%
+[[./xmpl_0004.png]]
 * The DT Factor
 I started with WMs in the first place, because of videos from [[https://distro.tube/index.html][DT's Distro Tube]] I stumbled across on =YoutTube=. The first one I tried was [[https://xmonad.org/][Xmonad]] (DT's favorite), which I got up and running (mostly thanks to DT's videos), but never felt very comfortable with due to me not having a clue about [[https://www.haskell.org/][Haskel]], the language =Xmonad= is written and configured in.
 
@@ -16,7 +34,7 @@ On the way to that decision, I watched several =YouTube= videos; one of which wa
 
 * Pre-Requisites to use
 
-=dwm= is written in [[https://www.open-std.org/jtc1/sc22/wg14/][C]], so it would have made sense to write the keybinding displaying program in =C= as well, perhaps even providing it as a [[https://dwm.suckless.org/patches/][patch to dwm]] - if I only knew how to write =C= programs. I mostly understand the syntax and am able to modify the =config.def.h= or even apply patches manually if the autmatic patching fails, but writing a program from scratch is way beyond me.
+=dwm= is written in [[https://www.open-std.org/jtc1/sc22/wg14/][C]], so it would have made sense to write the keybinding displaying program in =C= as well, perhaps even providing it as a [[https://dwm.suckless.org/patches/][patch to dwm]] - if I only knew how to write =C= programs. I mostly understand the syntax and am able to modify the =config.def.h= or even apply patches manually if the automatic patching fails, but writing a program from scratch is way beyond me.
 
 I know [[https://www.python.org/][Python]] quite well, doing reports and small apps in it at work and using it for all kind of private automation stuff and web development. So this is what I choose.
 
@@ -28,6 +46,25 @@ This means you need to have =Python 3= installed. The script does not use any ad
 
 * Installation
 The way I use =dwm-show-keybindings= is to clone the repo, and then use [[https://www.gnu.org/software/stow/][GNU Stow]] to create symlinks where needed. A =.stow.rc= file is included in the repo for this way of installing. If you choose another way, you may need to change some paths in the =Python= code.
+
+#+begin_src shell
+dwm-show-keybindings>>> ls -lpha
+drwxrwxr-x 4,0K Jun  3 15:52  ./
+drwxr-xr-x 4,0K Mai 27 17:49  ../
+drwxrwxr-x 4,0K Jun  3 15:51  .git/
+-rw-rw-r--   15 Mai 27 17:30  .gitignore
+-rw-rw-r--  100 Jun  3 15:20  .stow-local-ignore
+-rw-r--r--   40 Jun  3 15:20  .stowrc
+-rw-rw-r-- 1,1K Mai 27 17:48  LICENSE
+-rw-rw-r-- 7,8K Jun  3 15:03  README.org
+drwxrwxr-x 4,0K Jun  3 15:22  dwm-show-keybindings/
+-rw-rw-r-- 149K Jun  3 15:05  xmpl_0001.png
+-rw-rw-r-- 151K Jun  3 15:06  xmpl_0002.png
+-rw-rw-r-- 149K Jun  3 15:06  xmpl_0003.png
+-rw-rw-r-- 147K Jun  3 15:05  xmpl_0004.png
+
+dwm-show-keybindings>>> stow dwm-show-keybindings
+#+end_src
 
 When stowing, the following folders/files will be created:
 
@@ -125,21 +162,3 @@ As an alternative (that is the way I use it), leave the =[STYLE_{NAME}]= in plac
 + FgKeyChords :: foregroud color key chords
 + logo :: name of image file in =.config/dwm/dwm-keybindings/logo=
 
-* Screenshots
-Here you can see a couple of examples:
-
-#+CAPTION: Suckless Theme, 3 columns, weight 3:4
-#+attr_html: :width 100%
-[[./xmpl_0002.png]]
-
-#+CAPTION: Gruvbox Theme, 4 columns, weight 3:4
-#+attr_html: :width 100%
-[[./xmpl_0001.png]]
-
-#+CAPTION: Doom One Theme, 2 columns, weight 5:2
-#+attr_html: :width 100%
-[[./xmpl_0003.png]]
-
-#+CAPTION: Solarized Dark Theme, 2 columns, weight 1:2
-#+attr_html: :width 100%
-[[./xmpl_0004.png]]
