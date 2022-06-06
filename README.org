@@ -7,7 +7,7 @@ When starting with a WM (window manager), the most difficult thing for me is to 
 
 When I played around with [[https://xmonad.org/][Xmonad]], I wrote a simple =Python= script that extracted the keybindings from the config and displayed them in a terminal window. I created a =.desktop= file for that script, and was able to quickly start it from [[https://github.com/davatorium/rofi][Rofi]].
 
-* Screeshots
+* Screenshots
 Here you can see a couple of examples:
 
 ** Suckless Theme, 3 columns, weight 3:4
@@ -18,7 +18,7 @@ Here you can see a couple of examples:
 #+attr_html: :width 100%
 [[./xmpl_0001.png]]
 
-** Doom One Theme, 2 columns, weight 5:2
+** Doom One Theme, 2 columns, weight 2:5
 #+attr_html: :width 100%
 [[./xmpl_0003.png]]
 
@@ -162,3 +162,4 @@ As an alternative (that is the way I use it), leave the =[STYLE_{NAME}]= in plac
 + FgKeyChords :: foregroud color key chords
 + logo :: name of image file in =.config/dwm/dwm-keybindings/logo=
 
+  

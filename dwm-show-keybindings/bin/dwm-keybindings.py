@@ -117,20 +117,20 @@ class Cfgh:
         self.rgex = r"""
             # regex searching for keybing definitions including the
             # custom tags in comment
-            \{\s*                 # {
-            ([A-Za-z0\|]+)        # GROUP-1 :: MODKEY|ShiftMask etc or 0
-            \s*,\s*               # ,
-            ([A-Za-z0-9_]+)       # GROUP-2 :: XK_Return
-            \s*,\s*               # ,
-            ([A-Za-z_0-9]+)       # GROUP-3 :: spawn
-            \s*,\s*               # ,
-            \{\s*.+\s*\}          # {.v = termcmd }
-            \s*/\*                # /*
-            <g>([\w\-,\.:]+)</g>  # GROUP-4 :: <g>Spawner</g>
-            \s*                   # /*
-            <d>(.+)</d>           # GROUP-5 :: <d>Spawns a terminal.</d>
-            \s*\*/                # */
-            \s*\}\s*              # }
+            \{\s*                   # {
+            ([A-Za-z0\|]+)          # GROUP-1 :: MODKEY|ShiftMask etc or 0
+            \s*,\s*                 # ,
+            ([A-Za-z0-9_]+)         # GROUP-2 :: XK_Return
+            \s*,\s*                 # ,
+            ([A-Za-z_0-9]+)         # GROUP-3 :: spawn
+            \s*,\s*                 # ,
+            \{\s*.+\s*\}            # {.v = termcmd }
+            \s*/\*                  # /*
+            <g>([\w\s\-,\.:]+)</g>  # GROUP-4 :: <g>Spawner</g>
+            \s*                     # /*
+            <d>(.+)</d>             # GROUP-5 :: <d>Spawns a terminal.</d>
+            \s*\*/                  # */
+            \s*\}\s*                # }
         """
 
     def find_conf(self) -> None:
